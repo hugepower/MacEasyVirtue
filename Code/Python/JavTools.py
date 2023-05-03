@@ -2,7 +2,7 @@
 Author: hugepower
 Date: 2023-05-03 16:34:27
 LastEditors: hugepower
-LastEditTime: 2023-05-03 17:05:08
+LastEditTime: 2023-05-03 17:17:58
 Description: This is a tool that can match local and web movies with Tampermonkey scripts
 '''
 import logging
@@ -21,7 +21,7 @@ app = FastAPI()
 logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
     level=logging.INFO,
-    filename="Logs/javbus-logs.txt",
+    filename="Logs/javbus-logs.log",
     filemode="a",
 )
 
