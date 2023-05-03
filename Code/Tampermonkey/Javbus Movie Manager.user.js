@@ -9,7 +9,6 @@
 // @icon https://www.google.com/s2/favicons?sz=64&domain=javbus.com
 // @grant GM_xmlhttpRequest
 // @grant GM_download
-// @updateURL https://github.com/hugepower/MacEasyVirtue/raw/main/Code/Tampermonkey/Javbus%20Movie%20Manager.user.js
 // ==/UserScript==
 
 (function () {
