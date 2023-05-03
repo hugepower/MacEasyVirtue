@@ -2,7 +2,7 @@
 Author: hugepower
 Date: 2023-05-03 16:34:27
 LastEditors: hugepower
-LastEditTime: 2023-05-03 17:17:58
+LastEditTime: 2023-05-03 18:16:05
 Description: This is a tool that can match local and web movies with Tampermonkey scripts
 '''
 import logging
@@ -48,12 +48,24 @@ class MovieFinder:
     def is_movie_file(self, file):
         """
         Check if a file is a movie file based on its extension
+
+        Args:
+            file (Path): A Path object that represents a file.
+
+        Returns:
+            bool: True if the file is a movie file, False otherwise.
         """
         return file.is_file() and file.suffix in EXTENSIONS
 
     def get_movie_id(self, file):
         """
         Extract the movie id from a file name using a regex pattern
+
+        Args:
+            file (Path or str): A Path object or a string that represents a file name.
+
+        Returns:
+            str or None: The movie id if found, None otherwise.
         """
         ids = PATTERN.search(file.stem if isinstance(file, Path) else file)
         if ids is not None:
@@ -126,7 +138,7 @@ def get_movie_info():
     Return the movie information as a dictionary from a given source.
 
     Args:
-        source (str): The path to the file or directory that contains the movie files.
+        None
 
     Returns:
         dict: A dictionary that maps the movie titles to their metadata.
