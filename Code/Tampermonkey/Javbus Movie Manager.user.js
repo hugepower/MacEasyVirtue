@@ -2,13 +2,14 @@
 // @name Javbus Movie Manager
 // @name:zh-CN Javbus 影片管理器
 // @namespace http://tampermonkey.net/
-// @version 1.0
+// @version 1.1
 // @description This plugin modifies the page to show your local movie files information, such as adding tags and playing them from the local source.
 // @author hugepower
 // @match https://www.javbus.com/*
 // @icon https://www.google.com/s2/favicons?sz=64&domain=javbus.com
 // @grant GM_xmlhttpRequest
 // @grant GM_download
+// @updateURL https://github.com/hugepower/MacEasyVirtue/raw/main/Code/Tampermonkey/Javbus%20Movie%20Manager.user.js
 // ==/UserScript==
 
 (function () {
@@ -99,5 +100,3 @@
 
   window.addEventListener('load', checkActiveLi);
 })();
-
-
