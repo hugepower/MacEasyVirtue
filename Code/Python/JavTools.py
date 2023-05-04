@@ -113,8 +113,9 @@ class MovieHandler(FileSystemEventHandler):
         """
         Handle the modification of a file or directory
         """
-        logging.info("Modified %s", event.src_path)
-        self.finder.find_movies()
+        if self.finder.source.is_file():
+            logging.info("Modified %s", event.src_path)
+            self.finder.find_movies()
 
     def on_moved(self, event):
         """
