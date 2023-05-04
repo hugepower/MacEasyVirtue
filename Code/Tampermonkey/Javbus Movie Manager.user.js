@@ -91,10 +91,11 @@
 
   // check the active li element
   function checkActiveLi() {
-    var text = document.querySelector('ul.nav.navbar-nav > li.active > a').innerText;
-    if (text === '有碼') {
-      getMovieInfo();
-    }
+    // var text = document.querySelector('ul.nav.navbar-nav > li.active > a').innerText;
+    // if (text === '有碼') {
+    //   getMovieInfo();
+    // }
+    getMovieInfo();
   }
 
   window.addEventListener('load', checkActiveLi);
