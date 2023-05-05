@@ -7,6 +7,7 @@ Description: This is a tool that can match local and web movies with Tampermonke
 """
 import argparse
 import logging
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -139,15 +140,6 @@ class MovieAPI(FastAPI):
         self.add_api_route("/javbus/post/", self.post_movie_info, methods=["POST"])
 
     def log_and_return(self, status: str, message: str) -> dict:
-        """Log and return the status and message of a post request.
-
-        Args:
-            status (str): The status of the post request, either "success" or "error".
-            message (str): The message of the post request, containing some information or error details.
-
-        Returns:
-            dict: A dictionary that contains the status and the message of the post request.
-        """
         if status == "success":
             logging.info(message)
         else:
@@ -157,50 +149,56 @@ class MovieAPI(FastAPI):
             "message": message,
         }
 
-    def get_movie_info(self):
-        """
-        Return the movie information as a dictionary from a given source.
-
-        Args:
-            None
-
-        Returns:
-            dict: A dictionary that maps the movie titles to their metadata.
-        """
+    def get_movie_info(self) -> dict:
         return self.finder.get_movie_dict()
 
     def post_movie_info(self, data: SearchData) -> dict:
         """
-        Find the movie file based on the given movie_id and open it with IINA player.
+          Post movie information to Telegram.
 
         Args:
-            data (Data): An instance of the data model that contains the movie_id attribute.
+            data: A SearchData object containing the movie ID and other information.
 
         Returns:
-            dict: A dictionary that contains the status and the message of the request.
+            A dictionary containing the status and message of the posting.
 
         Raises:
-            KeyError: If no movie file is found with the given movie_id.
-            CalledProcessError: If the command to open the movie file with IINA fails.
+            KeyError: If the movie ID is not found in the movie dictionary.
+            OSError: If the movie file is not a valid video file or IINA is not installed.
         """
         movie_dict = self.finder.get_movie_dict()
         movie_id = data.movie_id
         movie_path = movie_dict.get(movie_id)
-        if movie_path is None:
-            error_message = f"No movie found with movie id {movie_id}"
+        self.open_with_iina(movie_path)
+
+    def open_with_iina(self, path):
+        """
+        Open a video file with IINA player.
+
+        Args:
+            path: A string representing the path of the video file.
+
+        Returns:
+            A dictionary containing the status and message of the operation.
+
+        Examples:
+            >>> open_with_iina("/Users/xxx/Movies/test.mp4")
+            {"status": "success", "message": "Opened /Users/xxx/Movies/test.mp4 with IINA"}
+            >>> open_with_iina("/Users/xxx/Movies/nonexistent.mp4")
+            {"status": "error", "message": "File /Users/xxx/Movies/nonexistent.mp4 does not exist."}
+        """
+        if not os.path.isfile(path):
+            error_message = f"File {path} does not exist."
             return self.log_and_return("error", error_message)
-        # Use a context manager to handle subprocess
         with subprocess.Popen(
-            ["open", "-a", "IINA", movie_path],
+            ["open", "-a", "IINA", path],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         ) as process:
-            # Wait for the process to finish and get the output and error
             _, error = process.communicate()
             if process.returncode == 0:
-                error_message = f"Opened {movie_path} with IINA"
+                error_message = f"Opened {path} with IINA"
                 return self.log_and_return("success", error_message)
-            # If the command fails, return an error message
             error_message = f"Failed to open movie with IINA: {error.decode()}"
             return self.log_and_return("error", error_message)
 
@@ -221,7 +219,7 @@ def run_app_and_observer(source: Path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the movie API and observer.")
     parser.add_argument(
-        "input_path", type=Path, help="The path to the movie data folder."
+        "input_path", type=Path, help="The path to the movie data folder or list file."
     )
     args = parser.parse_args()
     input_path = Path(args.input_path)
