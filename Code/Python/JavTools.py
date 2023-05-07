@@ -1,9 +1,5 @@
 """
-Author: hugepower
-Date: 2023-05-03 16:34:27
-LastEditors: hugepower
-LastEditTime: 2023-05-04 10:03:41
-Description: This is a tool that can match local and web movies with Tampermonkey scripts
+This is a tool that can match local and web movies with Tampermonkey scripts
 """
 import argparse
 import logging
@@ -86,6 +82,30 @@ class MovieFinder:
         Return the movie dictionary
         """
         return self.movie_dict
+
+    def run_command(self, command):
+        """
+        Execute a command line using subprocess module.
+
+        Args:
+            command (str): The command line to execute.
+
+        Raises:
+            subprocess.CalledProcessError: If the command fails.
+        """
+        try:
+            subprocess.run(command, shell=True, check=True)
+        except subprocess.CalledProcessError as error:
+            logging.warning("commandCommand failed: %s", error)
+
+    def reveal_in_finder(self, file_path):
+        """
+        Reveal a file or folder in Finder using open -R command.
+
+        Args:
+            file_path (str): The path of the file or folder to reveal.
+        """
+        self.run_command(f"open -R {file_path}")
 
 
 class MovieHandler(FileSystemEventHandler):
@@ -188,19 +208,21 @@ class MovieAPI(FastAPI):
             {"status": "error", "message": "File /Users/xxx/Movies/nonexistent.mp4 does not exist."}
         """
         if not os.path.isfile(path):
-            error_message = f"File {path} does not exist."
-            return self.log_and_return("error", error_message)
+            message = f"File {path} does not exist."
+            return self.log_and_return("error", message)
+        # This code runs "open -a IINA path", opening the file at path with IINA.
         with subprocess.Popen(
             ["open", "-a", "IINA", path],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         ) as process:
+            # Use process.communicate() to get the output and error of the process
             _, error = process.communicate()
             if process.returncode == 0:
-                error_message = f"Opened {path} with IINA"
-                return self.log_and_return("success", error_message)
-            error_message = f"Failed to open movie with IINA: {error.decode()}"
-            return self.log_and_return("error", error_message)
+                message = f"Opened {path} with IINA"
+                return self.log_and_return("success", message)
+            message = f"Failed to open movie with IINA: {error.decode()}"
+            return self.log_and_return("error", message)
 
 
 def run_app_and_observer(source: Path):
