@@ -84,6 +84,8 @@ class ParserA1111:
             "negative": "",
             "steps": "",
             "image_path": self.image_path,
+            "image_type": "A1111 WebUI",
+            "raw": "",
         }
         with Image.open(self.image_path, mode="r") as f:
             image_info = f.info.get("parameters", None)
@@ -98,6 +100,7 @@ class ParserA1111:
                     data["steps"] = self.parse_steps(item)
                 else:
                     data["description"] = self.split_string(item)
+            data["raw"] = "\n\n".join(items)
         return data
 
 
@@ -200,10 +203,42 @@ class MyWindow(QWidget):
         # 让窗体最大化显示
         self.showMaximized()
 
+        # 在右侧的垂直布局中，创建一个QTextEdit对象，作为文本框
+        self.edit4 = QTextEdit()
+        # 设置文本框的大小策略为QSizePolicy.Expanding
+        self.edit4.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # 默认隐藏显示 raw 信息的文本框
+        self.edit4.hide()
+
+        # 将文本框添加到垂直布局中的合适位置，比如在表格的下方，并设置比例因子为1
+        vbox.addWidget(self.edit4, 1)
+        # 在右侧的状态栏中，创建一个QPushButton对象，作为切换按钮
+        self.switch_button = QPushButton("RAW")
+        # 将按钮添加到状态栏中的合适位置，比如在更新按钮的右边
+        self.status_bar.addWidget(self.switch_button)
+        # 为按钮绑定一个槽函数，用来处理点击事件
+        self.switch_button.clicked.connect(self.switch_mode)
+
         # 设置图片列表的当前索引为0，即显示第一张图片
         self.current_index = 0
         # 调用self.show_image函数，传入当前索引
         self.show_image(self.current_index)
+
+    # 定义槽函数，用来切换显示模式
+    def switch_mode(self):
+        # 判断当前的显示模式
+        if self.table.isVisible():
+            self.edit1.hide()
+            self.edit2.hide()
+            self.table.hide()
+            self.edit4.show()
+            self.switch_button.setText("简单模式")
+        else:
+            self.edit1.show()
+            self.edit2.show()
+            self.table.show()
+            self.edit4.hide()
+            self.switch_button.setText("复杂模式")
 
     # 缩放图片到合适的大小，保持宽高比
     def scale_pixmap(self, pixmap):
@@ -244,8 +279,6 @@ class MyWindow(QWidget):
         self.add_dict_to_table(image_info["steps"])
         # 启用排序功能
         self.table.setSortingEnabled(True)
-        # 显示表格
-        self.table.show()
 
     # 定义一个函数，用来显示图片
     def show_image(self, index):
@@ -254,6 +287,9 @@ class MyWindow(QWidget):
         pixmap = QPixmap(image_path)
         self.scale_pixmap(pixmap)
         self.bind_image_info(image_path)
+        # 在文本框中，显示图片的文本信息，可以用ParserA1111类的read_image_info方法获取
+        image_info = ParserA1111(image_path).read_image_info()["raw"]
+        self.edit4.setText(image_info)
 
     # 定义槽函数，用来显示上一张图片
     def prev_image(self):
@@ -303,7 +339,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     app = QApplication([])
     apply_stylesheet(app, theme="dark_teal.xml")
-    images = get_image_paths(args.path)
+    images = get_image_paths(Path("/Users/yefeng/Desktop/SD-YYDS/sd_pic"))
     window = MyWindow(images)
     window.show()
     app.exec()
