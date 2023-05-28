@@ -330,17 +330,32 @@ def get_image_paths(input_path: Path):
 
 
 if __name__ == "__main__":
+    # Create an argument parser
     parser = argparse.ArgumentParser()
+    # Add an argument for launching the app with a path argument
     parser.add_argument(
-        "path",
-        help="the path to an image or a folder of images",
-        nargs="?",
+        "-a",
+        "--app",
+        help="launch the app with a path argument",
         type=Path,
     )
+    # Add an argument for printing the return information with an image path
+    parser.add_argument(
+        "-i",
+        "--info",
+        help="print the return information with an image path",
+        type=Path,
+    )
+    # Parse the arguments
     args = parser.parse_args()
-    app = QApplication([])
-    apply_stylesheet(app, theme="dark_teal.xml")
-    images = get_image_paths(args.path)
-    window = MyWindow(images)
-    window.show()
-    app.exec()
+    # If the app argument is given, launch the app with the path argument
+    if args.app:
+        app = QApplication([])
+        apply_stylesheet(app, theme="dark_teal.xml")
+        images = get_image_paths(args.app)
+        window = MyWindow(images)
+        window.show()
+        app.exec()
+    # If the info argument is given, print the return information with the image path
+    if args.info:
+        print(ParserA1111(args.info).read_image_info()["raw"])
