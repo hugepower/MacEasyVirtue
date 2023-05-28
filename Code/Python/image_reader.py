@@ -213,7 +213,7 @@ class MyWindow(QWidget):
         # 将文本框添加到垂直布局中的合适位置，比如在表格的下方，并设置比例因子为1
         vbox.addWidget(self.edit4, 1)
         # 在右侧的状态栏中，创建一个QPushButton对象，作为切换按钮
-        self.switch_button = QPushButton("RAW")
+        self.switch_button = QPushButton("切换显示模式")
         # 将按钮添加到状态栏中的合适位置，比如在更新按钮的右边
         self.status_bar.addWidget(self.switch_button)
         # 为按钮绑定一个槽函数，用来处理点击事件
@@ -232,6 +232,7 @@ class MyWindow(QWidget):
             self.edit2.hide()
             self.table.hide()
             self.edit4.show()
+            # 不要问为什么要用中文，我学比亚迪的
             self.switch_button.setText("简单模式")
         else:
             self.edit1.show()
@@ -339,7 +340,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     app = QApplication([])
     apply_stylesheet(app, theme="dark_teal.xml")
-    images = get_image_paths(Path("/Users/yefeng/Desktop/SD-YYDS/sd_pic"))
+    images = get_image_paths(args.path)
     window = MyWindow(images)
     window.show()
     app.exec()
