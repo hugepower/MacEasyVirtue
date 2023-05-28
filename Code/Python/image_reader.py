@@ -1,4 +1,5 @@
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -83,7 +84,7 @@ class ParserA1111:
             "description": "",
             "negative": "",
             "steps": "",
-            "image_path": self.image_path,
+            "image_path": str(self.image_path),
             "image_type": "A1111 WebUI",
             "raw": "",
         }
@@ -358,4 +359,10 @@ if __name__ == "__main__":
         app.exec()
     # If the info argument is given, print the return information with the image path
     if args.info:
-        print(ParserA1111(args.info).read_image_info()["raw"])
+        images_info = {
+            "data": [
+                ParserA1111(file).read_image_info()
+                for file in get_image_paths(args.info)
+            ]
+        }
+        print(json.dumps(images_info, indent=4))
