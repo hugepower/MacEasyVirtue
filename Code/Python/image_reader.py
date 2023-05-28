@@ -233,13 +233,13 @@ class MyWindow(QWidget):
             self.table.hide()
             self.edit4.show()
             # 不要问为什么要用中文，我学比亚迪的
-            self.switch_button.setText("简单模式")
+            self.switch_button.setText("复杂模式")
         else:
             self.edit1.show()
             self.edit2.show()
             self.table.show()
             self.edit4.hide()
-            self.switch_button.setText("复杂模式")
+            self.switch_button.setText("简单模式")
 
     # 缩放图片到合适的大小，保持宽高比
     def scale_pixmap(self, pixmap):
