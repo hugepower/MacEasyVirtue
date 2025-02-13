@@ -37,7 +37,6 @@ class WeiboUIDExtractor:
         :return: The Weibo user ID (int)
         """
         name = self.pic_url.split("/")[-1][:8]
-        print(name)
         return (
             int(name, 16)
             if re.match(r"[0-9a-fA-F]{6}", name)
@@ -66,7 +65,7 @@ pic = "https://wx2.sinaimg.cn/large/5f5b23d7gy1hygkp2zpfnj20zk1hj44u.jpg"
 weibo = WeiboUIDExtractor(pic)
 
 # Get the full Weibo URL
-print(weibo.get_weibo_url())  # Output: http://weibo.com/u/UID
+print(weibo.get_weibo_url())  # Output: http://weibo.com/u/1599808471
 
 # Get only the UID
-print(weibo.get_uid_only())  # Output: UID
+print(weibo.get_uid_only())  # Output: 1599808471
